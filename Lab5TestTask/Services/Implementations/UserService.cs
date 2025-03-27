@@ -1,6 +1,7 @@
 ﻿using Lab5TestTask.Data;
 using Lab5TestTask.Models;
 using Lab5TestTask.Services.Interfaces;
+using Lab5TestTask.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lab5TestTask.Services.Implementations;
@@ -19,11 +20,17 @@ public class UserService : IUserService
     }
     public async Task<User> GetUserAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users
+            .OrderByDescending(u => u.Sessions.Count)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
     }
 
     public async Task<List<User>> GetUsersAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Users
+            .Where(u => u.Sessions.Any(s => s.DeviceType == DeviceType.Mobile))
+            .AsNoTracking()
+            .ToListAsync();
     }
 }
